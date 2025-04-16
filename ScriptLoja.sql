@@ -6,7 +6,9 @@ GO
 CREATE TABLE Pessoa (
   idPessoa INT NOT NULL PRIMARY KEY DEFAULT NEXT VALUE FOR Seq_Pessoa,
   nome VARCHAR(255) NOT NULL,
-  endereco VARCHAR(255) NOT NULL,
+  logradouro VARCHAR(255) NOT NULL,
+  cidade VARCHAR(255) NOT NULL,
+  estado VARCHAR(255) NOT NULL,
   telefone VARCHAR(20) NOT NULL,
   email VARCHAR(255) NOT NULL
 );
@@ -28,7 +30,6 @@ GO
 
 CREATE TABLE Usuario (
   idUsuario INT NOT NULL IDENTITY PRIMARY KEY,
-  nome VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL,
   senha VARCHAR(255) NOT NULL
 );
@@ -42,30 +43,18 @@ CREATE TABLE Produto (
 );
 GO
 
-CREATE TABLE Compra (
-  idCompra INT NOT NULL IDENTITY PRIMARY KEY,
+CREATE TABLE Movimentacao (
+  idMovimentacao INT IDENTITY(1,1) PRIMARY KEY,
   idUsuario INT NOT NULL,
-  idPessoaJuridica INT NOT NULL,
+  idPessoa INT NOT NULL,
   idProduto INT NOT NULL,
-  quantidade INT NOT NULL,
-  precoUnitario DECIMAL(10, 2) NOT NULL,
-  dataHora DATETIME NOT NULL DEFAULT GETDATE(),
+  quantidade INT NOT NULL CHECK (quantidade > 0),
+  tipo CHAR(1) NOT NULL CHECK (tipo IN ('E', 'S')),
+  valorUnitario DECIMAL(10,2) NOT NULL CHECK (valorUnitario >= 0),
+  dataMovimentacao DATETIME DEFAULT GETDATE(),
+  
   FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
-  FOREIGN KEY (idPessoaJuridica) REFERENCES PessoaJuridica(idPessoa),
-  FOREIGN KEY (idProduto) REFERENCES Produto(idProduto)
-);
-GO
-
-CREATE TABLE Venda (
-  idVenda INT NOT NULL IDENTITY PRIMARY KEY,
-  idUsuario INT NOT NULL,
-  idPessoaFisica INT NOT NULL,
-  idProduto INT NOT NULL,
-  quantidade INT NOT NULL,
-  precoUnitario DECIMAL(10, 2) NOT NULL,
-  dataHora DATETIME NOT NULL DEFAULT GETDATE(),
-  FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario),
-  FOREIGN KEY (idPessoaFisica) REFERENCES PessoaFisica(idPessoa),
+  FOREIGN KEY (idPessoa) REFERENCES Pessoa(idPessoa),
   FOREIGN KEY (idProduto) REFERENCES Produto(idProduto)
 );
 GO
